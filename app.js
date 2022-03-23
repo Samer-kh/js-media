@@ -27,7 +27,7 @@ connection.connect(function (err) {
 var sock = io.sockets.on('connection', function (socket) {
 
   connection.query('select * from video', function (err, results) {
-    sock.emit('playlist',results);
+    sock.emit('playlist', results);
     //console.log(results)
     //console.log('emitted')
   });
@@ -35,12 +35,12 @@ var sock = io.sockets.on('connection', function (socket) {
     console.log('recieved : ' + arg)
     //emetting existing videos
     var name;
-    connection.query('select * from video where id='+arg,function (err, results){
-      name=results[0]['name']
+    connection.query('select * from video where id=' + arg, function (err, results) {
+      name = results[0]['name']
     })
 
-    console.log('/video/'+arg)
-    app.get('/video/'+arg, function (req, res) {
+    console.log('/video/' + arg)
+    app.get('/video/' + arg, function (req, res) {
       const range = req.headers.range;
       if (!range) {
         res.status(400).send('requires range header');
@@ -75,15 +75,15 @@ app.use(upload());
 
 //preparer l'id avant l'ajout pour se protéger contre le critére asynchrone
 var maxid = 0;
-var names =[]
+var names = []
 
 connection.query('select * from video', function (err, results) {
   for (i = 0; i < results.length; i++) {
     names.push(results[i]['name'])
-  
-    if (Number(results[i]['id'] )> maxid) {
+
+    if (Number(results[i]['id']) > maxid) {
       maxid = results[i]['id'];
-     
+
 
     }
   }
@@ -91,40 +91,39 @@ connection.query('select * from video', function (err, results) {
 console.log(names)
 //ajout de video
 app.post('/file', (req, res) => {
-  
-  var ok=true
+
+  var ok = true
   console.log(maxid)
-  
+
   let filee = req.files.location;
   let filename = filee.name
-  if(!names.includes(filename,0))
-  {
-  maxid++
-  filee.mv('./video/' +filename, function (err) {
-    if (err) { res.send(err); }
-  });
-  var sql = 'insert into video(id,name) values (' + maxid + ',"' + filename + '");'
-  connection.query(sql);
-  names.push(filename)
-}
-  res.sendFile(__dirname + "/index.html");
+  if (!names.includes(filename, 0)) {
+    maxid++
+    filee.mv('./video/' + filename, function (err) {
+      if (err) { res.send(err); }
+    });
+    var sql = 'insert into video(id,name) values (' + maxid + ',"' + filename + '");'
+    connection.query(sql);
+    names.push(filename)
+  }
+  res.redirect('/')
 });
 
-app.post('/files',function(req,res){
-var filedelete=req.body.name
-if(names.includes(filedelete,0))
-{
-  names.pop(filedelete);
-  connection.query('delete from video where name="'+filedelete+'";')
+app.post('/files', function (req, res) {
+  var filedelete = req.body.name
+  if (names.includes(filedelete, 0)) {
+    names.pop(filedelete);
+    connection.query('delete from video where name="' + filedelete + '";')
 
-}
-res.sendFile(__dirname + "/index.html");
+  }
+  res.redirect('/')
+
 });
 
 app.use(express.static(path.join(__dirname, '')));
 
 app.get('/', function (req, res) {
-
+  res.sendFile(__dirname + "/index.html");
 });
 
 
