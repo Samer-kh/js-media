@@ -1,30 +1,56 @@
 var socket = io();
+var id
 
-const pTab=document.querySelectorAll('p');
-const play = sessionStorage.getItem('play')
-console.log(play)
-if(play!==null)
+function reload()
 {
-pTab[play-1].style.backgroundColor="rgb(95,158,160)"
-pTab[play-1].style.color="white"
+    window.location.reload()
 }
-
-
-
-
-//creating icons
-function createIcon() {
-    let i = document.createElement('i');
-    i.class = "fa fa-play";
-    return i;
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }  
+async function loaddata()
+{
+    socket.on('playlist',(results)=>{
+        console.log(results)
+        id=results
+        console.log(results[0]['id'])
+        var playlist=document.querySelector(".play")
+        for(i=0;i<results.length;i++)
+        {
+            console.log(results.length)
+            playlist.innerHTML=playlist.innerHTML+"<p id='"+ results[i]['id']+"'>"+results[i]['name']+"</p>"
+        }
+        const play = sessionStorage.getItem('play')
+        if(play!==null){
+            var s=document.createElement('source')
+            s.src='/video/'+id[play-1]['id']
+            var videoTag=document.querySelector('video')
+            videoTag.appendChild(s)
+        //console.log('<source src="/video/'+play+'" id="source" type="video/mp4" />')
+        //videoTag.innerHTML='<source src="/video/'+play+'" id="source" type="video/mp4" />'
+        }
+    })
+    sleep(100).then(() => { events(); });
 }
+async function events()
+{
+    
+    const pTab=document.querySelectorAll('p');
+    const play = sessionStorage.getItem('play')
+    if(play!==null)
+    {
+    pTab[play-1].style.backgroundColor="rgb(37,37,37)"
+    pTab[play-1].style.color="white"
+    }
+
+
 
 //adding events to all texts in playlist
 
 
 pTab.forEach((element,index)=>{
     element.addEventListener('click',(e)=>{
-        socket.emit('title', index+1+ '.mp4');
+        socket.emit('title', id[index]['id'] );
         sessionStorage.setItem('play', index+1);
         window.location.reload();
 
@@ -44,11 +70,11 @@ document.getElementById('start').addEventListener('click',(e)=>{
         vid=true;
     }
     if((!vid)&&(sessionStorage.getItem('play')!==null)){
-        socket.emit('title',sessionStorage.getItem('play')+'.mp4')
+        socket.emit('title',id[sessionStorage.getItem('play')]['id'])
         window.location.reload();
     }
     if((!vid)&&(sessionStorage.getItem('play')==null)){
-        socket.emit('title',1+'.mp4')
+        socket.emit('title',id[0]['id'])
         sessionStorage.setItem('play',1);
         window.location.reload();
     }
@@ -58,14 +84,14 @@ document.getElementById('stop').addEventListener('click',(e)=>{
     const video=document.querySelector('video');
     sessionStorage.removeItem("play")
     window.location.reload();
-    video.pause();
     video.currentTime=0;
+    video.pause();
 });
 
 document.getElementById('next').addEventListener('click',(e)=>{
     const play=Number(sessionStorage.getItem('play'))+1;
-    if (play-1<30){
-    socket.emit('title',(play)+'.mp4')
+    if (play<=pTab.length){
+    socket.emit('title',id[play]['id'])
     sessionStorage.setItem('play',play);
     window.location.reload();
     }
@@ -76,8 +102,9 @@ document.getElementById('next').addEventListener('click',(e)=>{
 
 document.getElementById('previous').addEventListener('click',(e)=>{
     const play=Number(sessionStorage.getItem('play'))-1;
-    if(play-1>=1){
-    socket.emit('title',(play)+'.mp4')
+    if(play>=1){
+    
+    socket.emit('title',id[play]['id'])
     sessionStorage.setItem('play',play);
     window.location.reload();
     }
@@ -96,9 +123,11 @@ document.getElementById('pause').addEventListener('click',(e)=>{
 // controle du pop-up
 
 var modal = document.getElementById("myModal");
-var btn = document.getElementById("add");
+var btn = document.getElementById("addbtn");
 var span = document.querySelector(".close");
-
+var modals = document.getElementById("myModals");
+var btns = document.getElementById("delete");
+var spans = document.querySelector(".closes");
 // When the user clicks the button, open the modal 
 btn.onclick = function() {
   modal.style.display = "block";
@@ -115,6 +144,22 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
+// When the user clicks the button, open the modal 
+btns.onclick = function() {
+    modals.style.display = "block";
+  }
+  
+  // When the user clicks on <span> (x), close the modal
+  spans.onclick = function() {
+    modals.style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modals) {
+      modals.style.display = "none";
+    }
+  }
+}
 
-
-
+loaddata();

@@ -12,10 +12,10 @@
     <div id="wrapper">
         <div id="up">
             <div id="player">
-                <fieldset>
+                <fieldset id="fieldp">
 
-                    <video id="videoPlayer" id="vid"  width="100%" preload="none" controls autoplay>
-                        <source src="/video" id="source" type="video/mp4" />
+                    <video id="videoPlayer" id="vid" class="vidtag" width="100%" preload="none" controls autoplay>
+                        <div class="vidtag" id="inner"></div>
 
                     </video>
                 </fieldset>
@@ -24,12 +24,12 @@
             <div id="vari">
                 <fieldset>
                     <div id="wrapper2">
-                        <fieldset>
+                        <fieldset id="volumef">
                             <div id="volume">
                                 <b>Video Player</b>
                             </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset id="outilsf">
                             <div id="outils">
                                 <button value="Start" id="start" class="start">Start</button>
                                 <button value="Stop" id="resume">Resume</button>
@@ -39,10 +39,10 @@
                                 <button value="Previous" id="previous">Previous</button>
                             </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset id="addf">
                             <div id="add">
 
-                                <button value="Start" id="add" >Add Video</button>
+                                <button value="Start" id="addbtn" >Add Video</button>
                                <!--Pop up de l'ajout -->
                                 <div id="myModal" class="modal">
 
@@ -52,12 +52,9 @@
                                       <center>
                                       <fieldset>
                                           <legend>Add a Video</legend>
-                                          <form action="/file" method=post> 
+                                          <form action="/file" enctype="multipart/form-data" method=post> 
                                           <table>
-                                              <tr>
-                                                  <td>Name :</td>
-                                                  <td><input type="text" id="name" name="name"></td>
-                                              </tr>
+                                    
                                               <tr>
                                                 <td><label id="label-file">Path :</label></td>
                                                 <td><input type="file" id="location" name="location"></td>
@@ -66,7 +63,7 @@
                                           <br>
                                           
                                           
-                                          <input type="submit" value="Submit">
+                                          <input type="submit" value="Upload" >
                                           <input type="reset" value="Reset">
                                             
                                         </form>
@@ -76,11 +73,40 @@
                                   
                                   </div>
                                    <!--******************-->
-                                <button value="Stop">Delete Video</button>
+                                <button value="delete" id="delete">Delete Video</button>
+                            <!--Pop up de la suppression -->
+                            <div id="myModals" class="modals">
 
+                                <!-- Modal content -->
+                                <div class="modal-contents">
+                                <span id="closes" class="closes">&times;</span>
+                                <center>
+                                <fieldset>
+                                    <legend>Delete a Video</legend>
+                                    <form action="/files" enctype="multipart/form-data" method=post> 
+                                    <table>
+                                
+                                        <tr>
+                                            <td><label id="label-files">Name :</label></td>
+                                            <td><input type="text" id="name" name="name"></td>
+                                        </tr>
+                                    </table>
+                                    <br>
+                                    
+                                    
+                                    <input type="submit" value="Delete">
+                                    <input type="reset" value="Reset">
+                                        
+                                    </form>
+                                </fieldset>
+                                </center>
+                                </div>
+                            
+                            </div>
+                            <!--******************-->
                             </div>
                         </fieldset>
-                        <fieldset>
+                        <fieldset id="othersf">
                             <div id="others">
                                 <label><b>Other tools :</b></label><a href=""><b>Image Viewer</b></a>
 
@@ -95,39 +121,10 @@
 
             <div id="media">
 
-                <fieldset>
+                <fieldset class="play">
                     <legend><b>Playlist</b></legend>
-                    <a id="songPlaying" style="visibility: hidden;"></a>
-                    <p href="" value="2.mp4" id="1">2</p>
-                    <p value="1.mp4" id="2">1</p>
-                    <p>samir il wisf</p>
-                    <p>The walk in our stars</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>The walk in our stars</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>The walk in our stars</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
-                    <p>Madonna</p>
-                    <p>samir il wisf</p>
+                    
+                
 
                 </fieldset>
             </div>

@@ -6,24 +6,47 @@ var fs = require('fs');
 const { Server } = require("socket.io");
 const io = new Server(server);
 path = require('path');
-util = require('util')
+util = require('util');
+upload = require('express-fileupload')
 const bodyParser = require('body-parser');
 
+var connection = require('mysql').createConnection({
+  host: 'localhost',
+  user: 'root',
+  port: 3306,
+  database: 'videos'
+});
+connection.connect(function (err) {
+  if (err) {
+    return console.error('error: ' + err.message);
+  }
+  console.log('Connected to the MySQL server.');
+});
 
 
-
-app.use(bodyParser.urlencoded({ extended: true }));
 var sock = io.sockets.on('connection', function (socket) {
 
+  connection.query('select * from video', function (err, results) {
+    sock.emit('playlist',results);
+    //console.log(results)
+    //console.log('emitted')
+  });
   socket.on('title', (arg) => {
     console.log('recieved : ' + arg)
-    app.get('/video', function (req, res) {
+    //emetting existing videos
+    var name;
+    connection.query('select * from video where id='+arg,function (err, results){
+      name=results[0]['name']
+    })
+
+    console.log('/video/'+arg)
+    app.get('/video/'+arg, function (req, res) {
       const range = req.headers.range;
       if (!range) {
         res.status(400).send('requires range header');
       }
-      const videoPath = "./video/" + arg;
-      const videoSize = fs.statSync("./video/" + arg).size;
+      const videoPath = "./video/" + name;
+      const videoSize = fs.statSync("./video/" + name).size;
       const CHUNK_SIZE = 10 ** 6;
       const start = Number(range.replace(/\D/g, ""));
       const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
@@ -37,32 +60,71 @@ var sock = io.sockets.on('connection', function (socket) {
       res.writeHead(206, headers);
       const videoStream = fs.createReadStream(videoPath, { start, end });
       videoStream.pipe(res);
-    
-    
 
+
+
+    });
+    return sock;
   });
-  return sock;
-});
 });
 
 
 
-app.post('/file',(req,res)=>{
-  res.sendFile(__dirname + '/index.html');
-  console.log(req.body.name)
-  console.log(req.body.location)
-   
-  fs.copyFile(req.body.location, './video/'+req.body.name +'.mp4', (err) => {
-    if (err) throw err;
-      console.log('source.txt was copied to destination.txt');
-   });
+
+app.use(upload());
+
+//preparer l'id avant l'ajout pour se protéger contre le critére asynchrone
+var maxid = 0;
+var names =[]
+
+connection.query('select * from video', function (err, results) {
+  for (i = 0; i < results.length; i++) {
+    names.push(results[i]['name'])
   
+    if (Number(results[i]['id'] )> maxid) {
+      maxid = results[i]['id'];
+     
+
+    }
+  }
+});
+console.log(names)
+//ajout de video
+app.post('/file', (req, res) => {
+  
+  var ok=true
+  console.log(maxid)
+  
+  let filee = req.files.location;
+  let filename = filee.name
+  if(!names.includes(filename,0))
+  {
+  maxid++
+  filee.mv('./video/' +filename, function (err) {
+    if (err) { res.send(err); }
+  });
+  var sql = 'insert into video(id,name) values (' + maxid + ',"' + filename + '");'
+  connection.query(sql);
+  names.push(filename)
+}
+  res.sendFile(__dirname + "/index.html");
+});
+
+app.post('/files',function(req,res){
+var filedelete=req.body.name
+if(names.includes(filedelete,0))
+{
+  names.pop(filedelete);
+  connection.query('delete from video where name="'+filedelete+'";')
+
+}
+res.sendFile(__dirname + "/index.html");
 });
 
 app.use(express.static(path.join(__dirname, '')));
 
 app.get('/', function (req, res) {
-  
+
 });
 
 
