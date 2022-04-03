@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="Css/index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <div id="up">
+            <div id="player">
+                <fieldset id="fieldp">
+
+                    <video id="videoPlayer" id="vid" class="vidtag" width="100.5%" preload="none" controls autoplay>
+                        <div class="vidtag" id="inner"></div>
+
+                    </video>
+                </fieldset>
+
+            </div>
+            <div id="vari">
+                <fieldset>
+                    <div id="wrapper2">
+                        <fieldset id="volumef">
+                            <div id="volume">
+                                <b>Video Player</b>
+                            </div>
+                        </fieldset>
+                        <fieldset id="outilsf">
+                            <div id="outils">
+                                <button value="Start" id="start" class="start">Start</button>
+                                <button value="Stop" id="resume">Resume</button>
+                                <button value="Stop" id="pause">Pause</button>
+                                <button value="Stop" id="stop">Stop</button>
+                                <button value="Next" id="next">Next</button>
+                                <button value="Previous" id="previous">Previous</button>
+                               
+                            </div>
+                        </fieldset>
+                        <fieldset id="addf">
+                            <div id="add">
+
+                                <button value="Start" id="addbtn">Add Video</button>
+                                <!--Pop up de l'ajout -->
+                                <div id="myModal" class="modal">
+
+                                    <!-- Modal content -->
+                                    <div class="modal-content">
+                                        <span id="close" class="close">&times;</span>
+                                        <center>
+                                            <fieldset>
+                                                <legend>Add a Video</legend>
+                                                <form action="/file" enctype="multipart/form-data" method=post>
+                                                    <table>
+
+                                                        <tr>
+                                                            <td><label id="label-file">Path :</label></td>
+                                                            <td><input type="file" id="location" name="location"></td>
+                                                        </tr>
+                                                    </table>
+                                                    <br>
+
+
+                                                    <input type="submit" value="Upload">
+                                                    <input type="reset" value="Reset">
+
+                                                </form>
+                                            </fieldset>
+                                        </center>
+                                    </div>
+
+                                </div>
+                                <!--******************-->
+                                <button value="delete" id="delete">Delete Video</button>
+                                <!--Pop up de la suppression -->
+                                <div id="myModals" class="modals">
+
+                                    <!-- Modal content -->
+                                    <div class="modal-contents">
+                                        <span id="closes" class="closes">&times;</span>
+                                        <center>
+                                            <fieldset>
+                                                <legend>Delete a Video</legend>
+                                                <form action="/files" enctype="multipart/form-data" method=post>
+                                                    <table>
+
+                                                        <tr>
+                                                            <td><label id="label-files">Name :</label></td>
+                                                            <td><input type="text" id="name" name="name"></td>
+                                                        </tr>
+                                                    </table>
+                                                    <br>
+
+
+                                                    <input type="submit" value="Delete" id="dell" >
+                                                    <input type="reset" value="Reset">
+
+                                                </form>
+                                            </fieldset>
+                                        </center>
+                                    </div>
+
+                                </div>
+                                <!--******************-->
+                            </div>
+                        </fieldset>
+                        <fieldset id="othersf">
+                            <div id="others">
+                                <form action="/imagee" method="get"><input type="submit" id="imagesub" value="Image Viewer"></form>
+
+
+                            </div>
+                        </fieldset>
+
+
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div id="bar">
+
+            <div id="media">
+
+                <fieldset class="play">
+                    <legend><b>Playlist</b></legend>
+
+
+
+                </fieldset>
+            </div>
+
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="Scripts/index.js"></script>
+
+</body>
+
+</html>
